@@ -160,6 +160,7 @@ export default function App() {
               min="5"
               max="200"
               step="5"
+              aria-label="Target file size limit in Kilobytes"
               value={targetSize}
               onChange={(e) => {
                 if (e.target.files?.[0]) validateAndSetFile(e.target.files[0]);
@@ -186,6 +187,7 @@ export default function App() {
                 onChange={(e) => setWidth(Number(e.target.value))}
                 disabled={preset !== "custom"}
                 className="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 outline-none disabled:bg-gray-50"
+                aria-label="Maximum output width in pixels"
               />
             </div>
             <div>
@@ -198,6 +200,7 @@ export default function App() {
                 onChange={(e) => setHeight(Number(e.target.value))}
                 disabled={preset !== "custom"}
                 className="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 outline-none disabled:bg-gray-50"
+                aria-label="Maximum output height in pixels"
               />
             </div>
           </div>
