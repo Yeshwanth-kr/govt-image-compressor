@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from "react";
+
 import { compressImageToTarget } from "./utils/compressor.js";
+import { PORTAL_PRESETS } from "./utils/portalPresets";
 
 export default function App() {
+  const PAYMENT_CONFIG = {
+    upiId: import.meta.env.VITE_UPI_ID || "",
+    payeeName: import.meta.env.VITE_PAYEE_NAME || "Developer",
+  };
   // 1. Core File & Processing State
+  const [selectedPortal, setSelectedPortal] = useState("ssc_photo");
   const [error, setError] = useState(null);
   const [file, setFile] = useState(null);
   const [compressedResult, setCompressedResult] = useState(null);
@@ -16,7 +23,12 @@ export default function App() {
 
   // Sync settings when preset tabs change
   useEffect(() => {
-    if (preset === "photo") {
+    if (preset === "portal" && PORTAL_PRESETS[selectedPortal]) {
+      const config = PORTAL_PRESETS[selectedPortal];
+      setTargetSize(config.targetSizeKb);
+      setWidth(config.width);
+      setHeight(config.height);
+    } else if (preset === "photo") {
       setTargetSize(50);
       setWidth(200);
       setHeight(230);
@@ -25,7 +37,7 @@ export default function App() {
       setWidth(140);
       setHeight(60);
     }
-  }, [preset]);
+  }, [preset, selectedPortal]);
 
   // Trigger compression loop whenever constraints or file input changes
   useEffect(() => {
@@ -91,31 +103,48 @@ export default function App() {
         {/* LEFT COLUMN: Control Configuration (4 Cols) */}
         <section className="md:col-span-4 bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-6 h-fit">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">
-              1. Select Document Type
+            <h2 className="text-sm font-semibold text-gray-900 mb-3">
+              1. Select Optimization Target
             </h2>
-            <div className="grid grid-cols-3 gap-2 bg-gray-100 p-1 rounded-lg">
-              <button
-                onClick={() => setPreset("photo")}
-                className={`py-2 text-xs font-medium rounded-md transition ${preset === "photo" ? "bg-white text-blue-600 shadow-sm" : "text-gray-600 hover:text-gray-900"}`}
-              >
-                Passport Photo
-              </button>
-              <button
-                onClick={() => setPreset("signature")}
-                className={`py-2 text-xs font-medium rounded-md transition ${preset === "signature" ? "bg-white text-blue-600 shadow-sm" : "text-gray-600 hover:text-gray-900"}`}
-              >
-                Signature
-              </button>
-              <button
-                onClick={() => setPreset("custom")}
-                className={`py-2 text-xs font-medium rounded-md transition ${preset === "custom" ? "bg-white text-blue-600 shadow-sm" : "text-gray-600 hover:text-gray-900"}`}
-              >
-                Custom
-              </button>
+            <div className="grid grid-cols-4 gap-1.5 bg-gray-100 p-1 rounded-lg mb-4">
+              {["photo", "signature", "portal", "custom"].map((t) => (
+                <button
+                  key={t}
+                  onClick={() => setPreset(t)}
+                  className={`py-1.5 text-[11px] capitalize font-medium rounded-md transition ${preset === t ? "bg-white text-blue-600 shadow-sm" : "text-gray-600 hover:text-gray-900"}`}
+                >
+                  {t === "photo"
+                    ? "Std Photo"
+                    : t === "signature"
+                      ? "Std Sign"
+                      : t}
+                </button>
+              ))}
             </div>
-          </div>
 
+            {/* Dynamic Exam Portal Selector Dropdown */}
+            {preset === "portal" && (
+              <div className="space-y-2 animate-fade-in">
+                <label className="text-xs font-medium text-gray-600 block">
+                  Target Exam / Portal
+                </label>
+                <select
+                  value={selectedPortal}
+                  onChange={(e) => setSelectedPortal(e.target.value)}
+                  className="w-full p-2.5 bg-white border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 outline-none text-gray-700"
+                >
+                  {Object.entries(PORTAL_PRESETS).map(([key, value]) => (
+                    <option key={key} value={key}>
+                      {value.name}
+                    </option>
+                  ))}
+                </select>
+                <p className="text-[11px] text-amber-600 bg-amber-50 p-2 rounded border border-amber-100 mt-1">
+                  💡 {PORTAL_PRESETS[selectedPortal]?.description}
+                </p>
+              </div>
+            )}
+          </div>
           {/* Size Slider */}
           <div>
             <div className="flex justify-between items-center mb-2">
@@ -338,7 +367,7 @@ export default function App() {
           <div className="mt-6 md:mt-0 flex flex-col sm:flex-row items-center justify-center gap-4 shrink-0">
             {/* UPI Intent Gateway Option */}
             <a
-              href="upi://pay?pa=yeshwanth.kr@okaxis&pn=Yeshwanth%20Krishna&cu=INR"
+              href={`upi://pay?pa=${PAYMENT_CONFIG.upiId}&pn=${encodeURIComponent(PAYMENT_CONFIG.payeeName)}&cu=INR`}
               className="bg-white text-blue-700 hover:bg-blue-50 font-bold text-sm px-6 py-3 rounded-lg shadow transition block w-full sm:w-auto text-center"
             >
               ⚡ Pay via UPI (₹20 / ₹50)
