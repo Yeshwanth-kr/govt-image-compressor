@@ -169,7 +169,7 @@ export default function App() {
               className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600 disabled:opacity-60"
             />
             {preset !== "custom" && (
-              <p className="text-[11px] text-gray-400 mt-1">
+              <p className="text-[11px] text-gray-600 mt-1">
                 Locked to standard portal configuration.
               </p>
             )}
@@ -434,8 +434,10 @@ export default function App() {
       </section>
 
       {/* Production System Footer */}
-      <footer className="max-w-6xl mx-auto px-4 py-12 text-center text-xs text-gray-400 mt-12 border-t border-gray-100">
-        <p>
+      {/* Before: text-gray-400 or plain unstyled text inheriting a light shade */}
+      {/* After: Explicitly styled with text-gray-500 or text-gray-600 */}
+      <footer className="mt-12 py-6 text-center border-t border-gray-200">
+        <p className="text-xs text-gray-600">
           © 2026 resizer.yeshwanth.online • Built securely for automated
           document preparation.
         </p>
