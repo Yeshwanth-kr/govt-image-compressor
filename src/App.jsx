@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 import { compressImageToTarget } from "./utils/compressor.js";
 import { PORTAL_PRESETS } from "./utils/portalPresets";
