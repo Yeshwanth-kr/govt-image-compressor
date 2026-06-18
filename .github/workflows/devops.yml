@@ -23,12 +23,12 @@ jobs:
           npm run lint # Shows you care about code quality
           
       - name: Build Docker Image
-        run: docker build -t scratchpad:latest .
+        run: docker build -t govt-image-compressor:latest .
 
       - name: Run Security Scan (Trivy)
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'scratchpad:latest'
+          image-ref: 'govt-image-compressor:latest'
           format: 'table'
           exit-code: '0' # Don't fail the build yet, just show the report
           severity: 'CRITICAL,HIGH'
